@@ -1,18 +1,19 @@
 #!/usr/bin/env python
 """An SMTP sink."""
 
+import argparse
 import asyncore
 import json
+import os
 import re
 import smtpd
+import threading
 import time
-
-# TODO: Fix this. Need to make a class var for the lock and then maybe
-#       a decorator for the process_message method.
-LOCK = threading.Lock()
 
 class SmtpSinkServer(smtpd.SMTPServer):
   """SMTP Sink class."""
+
+  __lock = threading.Lock()
 
   def __init__(self, host, port, sink_dir='/tmp/smtpsink', msg_ct=50, **kwargs):
     print 'SMTPSink ready for service.'
@@ -24,7 +25,7 @@ class SmtpSinkServer(smtpd.SMTPServer):
 
   def process_message(self, peer, mailfrom, rcptto, data):
     """Save the received message into a log."""
-    LOCK.acquire()
+    __lock.acquire()
     pat = re.compile('\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d.\d+$')
     msgs = [f for f in sorted(os.listdir(self._sink_dir)) if pat.match(f)]
     if len(msgs) > self._msg_ct:
@@ -41,13 +42,21 @@ class SmtpSinkServer(smtpd.SMTPServer):
       'mailfrom': mailfrom,
       'rcpttos': rcpttos,
       'data': data,
-      })
+      }))
     f.close()
-    LOCK.release()
+    __lock.release()
 
 
 if __name__ == '__main__':
-  smtpsink = SmtpSinkServer('localhost', 2525, sink_dir='log')
+  parser = argparse.ArgumentParser(prog='smtpsinkd',
+    usage='%(prog)s [options]', description='SMTP Sink server')
+  parser.add_argument('host', nargs='?', default='localhost')
+  parser.add_argument('port', nargs='?', type=int, default=25)
+  parser.add_argument('--sink-dir', default='log')
+  parser.add_argument('-v', '--version', action='version',
+      version='%(prog)s 0.0.1')
+  args = parser.parse_args()
+  smtpsink = SmtpSinkServer(args.host, args.port, sink_dir=args.sink_dir)
   try:
     asyncore.loop()
   except KeyboardInterrupt:
