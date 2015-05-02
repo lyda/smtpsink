@@ -4,10 +4,11 @@ try:
     from setuptools import setup
 except ImportError:
     from distutils.core import setup
+import smtpsinkd
 
 setup(
     name='smtpsink',
-    version='0.0.2',
+    version=smtpsinkd.VERSION,
     license='GPLv3',
     description='An SMTP Sink with a Web UI.',
     long_description=open('README.md').read(),

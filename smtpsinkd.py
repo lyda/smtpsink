@@ -55,11 +55,15 @@ if __name__ == '__main__':
     description='SMTP Sink server')
   parser.add_argument('host', nargs='?', default='localhost')
   parser.add_argument('port', nargs='?', type=int, default=25)
-  parser.add_argument('--sink-dir', default='log')
+  parser.add_argument('--sink-dir', default='log',
+      help='The dir to dump mail messages in.')
+  parser.add_argument('--msg-ct', default=50, type=int,
+      help='Number of messages to keep.')
   parser.add_argument('-v', '--version', action='version',
       version='%(prog)s ' + VERSION)
   args = parser.parse_args()
-  smtpsink = SmtpSinkServer(args.host, args.port, sink_dir=args.sink_dir)
+  smtpsink = SmtpSinkServer(args.host, args.port,
+      sink_dir=args.sink_dir, msg_ct=args.msg_ct)
   try:
     asyncore.loop()
   except KeyboardInterrupt:
