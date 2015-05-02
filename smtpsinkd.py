@@ -27,7 +27,7 @@ class SmtpSinkServer(smtpd.SMTPServer):
 
   def process_message(self, peer, mailfrom, rcptto, data):
     """Save the received message into a log."""
-    __lock.acquire()
+    self.__lock.acquire()
     pat = re.compile('\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d.\d+$')
     msgs = [f for f in sorted(os.listdir(self._sink_dir)) if pat.match(f)]
     if len(msgs) > self._msg_ct:
@@ -46,7 +46,7 @@ class SmtpSinkServer(smtpd.SMTPServer):
       'data': data,
       }))
     f.close()
-    __lock.release()
+    self.__lock.release()
 
 
 if __name__ == '__main__':
