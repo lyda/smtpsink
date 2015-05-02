@@ -1,0 +1,11 @@
+MANIFEST
+build/
+dist/
+htmlcov/
+*.pyc
+*.swp
+.tox
+.coverage
+.idea
+.*.swp
+*~
