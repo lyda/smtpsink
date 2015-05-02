@@ -10,6 +10,8 @@ import smtpd
 import threading
 import time
 
+VERSION='0.0.2'
+
 class SmtpSinkServer(smtpd.SMTPServer):
   """SMTP Sink class."""
 
@@ -48,13 +50,14 @@ class SmtpSinkServer(smtpd.SMTPServer):
 
 
 if __name__ == '__main__':
-  parser = argparse.ArgumentParser(prog='smtpsinkd',
-    usage='%(prog)s [options]', description='SMTP Sink server')
+  parser = argparse.ArgumentParser(prog='smtpsinkd.py',
+    usage='%(prog)s [host [port]] [flags]',
+    description='SMTP Sink server')
   parser.add_argument('host', nargs='?', default='localhost')
   parser.add_argument('port', nargs='?', type=int, default=25)
   parser.add_argument('--sink-dir', default='log')
   parser.add_argument('-v', '--version', action='version',
-      version='%(prog)s 0.0.1')
+      version='%(prog)s ' + VERSION)
   args = parser.parse_args()
   smtpsink = SmtpSinkServer(args.host, args.port, sink_dir=args.sink_dir)
   try:

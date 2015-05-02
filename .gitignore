@@ -2,6 +2,7 @@ MANIFEST
 build/
 dist/
 htmlcov/
+/smtpsink.egg-info/
 *.pyc
 *.swp
 .tox
