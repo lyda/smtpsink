@@ -42,7 +42,7 @@ class SmtpSinkServer(smtpd.SMTPServer):
     f.write(json.dumps({
       'peer': peer,
       'mailfrom': mailfrom,
-      'rcpttos': rcpttos,
+      'rcptto': rcptto,
       'data': data,
       }))
     f.close()
